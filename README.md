@@ -19,6 +19,8 @@ pip install -r requirements.txt
 set PYTHONPATH=src
 python -m safeview.demo
 ```
+Face detection uses OpenCV's YuNet model (`models/face_detection_yunet_2023mar.onnx`, from opencv_zoo), via `cv2.FaceDetectorYN` (tested on OpenCV 5.0; OpenCV 5 dropped `CascadeClassifier`).
+
 Press `q` to quit, `r` to toggle recording (blurred output only, saved to `recordings/`).
 
 ## Status

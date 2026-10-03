@@ -6,19 +6,23 @@ import cv2
 
 from .blur import blur_region
 
+MODEL_PATH = os.path.join(os.path.dirname(__file__), "..", "..", "models", "face_detection_yunet_2023mar.onnx")
+
 
 def main():
     cap = cv2.VideoCapture(0)
     if not cap.isOpened():
         raise SystemExit("Cannot open webcam")
-    detector = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
+    detector = cv2.FaceDetectorYN.create(MODEL_PATH, "", (320, 320), score_threshold=0.5)
     writer = None
     while True:
         ok, frame = cap.read()
         if not ok:
             break
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        for (x, y, w, h) in detector.detectMultiScale(gray, 1.1, 4):
+        detector.setInputSize((frame.shape[1], frame.shape[0]))
+        _, faces = detector.detect(frame)
+        for f in (faces if faces is not None else []):
+            x, y, w, h = (int(v) for v in f[:4])
             blur_region(frame, x, y, w, h)
         # `frame` is already blurred here; nothing unblurred is displayed or saved.
         if writer is not None:
